@@ -33,3 +33,6 @@ zip_file == zipper.file # => true
 # Unzip
 unzip_path = ZipDir::Unzipper.new(zip_file.path).unzip_path
 ```
+
+## dir_model
+Use [`dir_model`](https://github.com/FinalCAD/dir_model) to create complex directories to zip.
