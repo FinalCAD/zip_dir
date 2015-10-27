@@ -10,6 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["hello@stevenchung.ca"]
 
   spec.summary       = "Zip and unzip directories."
+  spec.homepage      = "https://github.com/FinalCAD/zip_dir"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
