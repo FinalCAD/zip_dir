@@ -1,8 +1,9 @@
 module ZipDir
   class Zip
     attr_reader :source_path
-    def initialize(source_path, filename)
-      @source_path, @file = source_path, Tempfile.new(filename)
+    def initialize(source_path, filename="zip.zip")
+      filename = filename.chomp(".zip")
+      @source_path, @file = source_path, Tempfile.new(["#{filename}-", ".zip"])
     end
 
     def file
