@@ -1,8 +1,9 @@
 module ZipDir
   class Zipper
-    attr_reader :copy_path, :file
+    attr_reader :copy_path, :filename
 
-    def initialize
+    def initialize(filename="zipper.zip")
+      @filename = filename
       @copy_path = Dir.mktmpdir
     end
 
@@ -12,22 +13,38 @@ module ZipDir
     alias_method :<<, :add_path
 
     def generated?
-      !!file
+      !!@generated
     end
 
-    def generate(filename="zipper")
-      yield self
+    def generate(source_path=nil)
+      cleanup if generated?
+
+      if source_path
+        raise "should not give block and source_path" if block_given?
+        add_path source_path
+      else
+        yield self
+      end
+
       @file = Zip.new(copy_path, filename).file
+    ensure
+      @generated = true
+    end
+
+    def file
+      return unless generated?
+      @file
     end
 
     def cleanup
       FileUtils.remove_entry_secure copy_path
+      @generated = false
     end
 
     class Zip
       attr_reader :source_path
       def initialize(source_path, filename)
-        @source_path, @file = source_path, Tempfile.new([filename, ".zip"])
+        @source_path, @file = source_path, Tempfile.new(filename)
       end
 
       def file
