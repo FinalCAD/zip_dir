@@ -22,11 +22,16 @@ Or install it yourself as:
 
 ```ruby
 # Zip
-zipper = ZipDir::Zipper.new
+zipper = ZipDir::Zipper.new(__optional_filename__)
+
+zip_file = zipper.generate(__some_path_to_directory__)
+
+# alternative generate call below (don't call both!)
 zip_file = zipper.generate do |z|
   z.add_path __some_path_to_directory__
   z.add_path __another_path_to_directory__ # does a shell "cp -r" operation
 end
+
 zip_file == zipper.file # => true
 
 
