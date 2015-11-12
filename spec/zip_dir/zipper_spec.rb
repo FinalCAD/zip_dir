@@ -2,6 +2,7 @@ require 'spec_helper'
 
 describe ZipDir::Zipper do
   let(:instance) { described_class.new }
+  let(:tree_dir) { "spec/fixtures/tree" }
 
   describe "#generated?" do
     subject { instance.generated? }
@@ -11,7 +12,7 @@ describe ZipDir::Zipper do
     end
 
     context "after generating" do
-      before { generate_tree }
+      before { instance.generate(tree_dir) }
 
       it "should be true" do
         expect(subject).to eql true
@@ -28,7 +29,7 @@ describe ZipDir::Zipper do
     end
 
     context "after generating" do
-      before { generate_tree }
+      before { instance.generate(tree_dir) }
 
       it "the filename is defaulted" do
         filename = File.basename(subject.path)
@@ -45,7 +46,7 @@ describe ZipDir::Zipper do
     end
 
     context "after generating" do
-      before { generate_tree }
+      before { instance.generate(tree_dir) }
 
       it "cleans up file and copy path" do
         expect(instance.file).to_not eql nil
@@ -62,14 +63,15 @@ describe ZipDir::Zipper do
   end
 
   describe "#generate" do
-    subject { instance.generate("spec/fixtures/tree") }
+    subject { instance.generate(tree_dir) }
 
     it "zips the folders" do
       subject
       unzip_path = ZipDir::Unzipper.new(instance.file.path).unzip_path
 
-      expect(Dir.clean_entries(unzip_path)).to eql %w[tree]
-      test_tree(unzip_path)
+      expect(clean_glob(unzip_path)).to match_array ["/tree", "/tree/branch", "/tree/branch/branch_image1.png",
+                                                     "/tree/branch/branch_image2.png", "/tree/root_image.png"]
+      test_images(unzip_path)
     end
 
     context "with two folders" do
@@ -84,24 +86,11 @@ describe ZipDir::Zipper do
       it "zips the folders" do
         subject
         unzip_path = ZipDir::Unzipper.new(instance.file.path).unzip_path
-
-        expect(Dir.clean_entries(unzip_path)).to eql %w[single tree]
-        test_single(unzip_path)
-        test_tree(unzip_path)
+        expect(clean_glob(unzip_path)).to match_array ["/single", "/single/single_image.png", "/tree", "/tree/branch",
+                                                       "/tree/branch/branch_image1.png", "/tree/branch/branch_image2.png",
+                                                       "/tree/root_image.png"]
+        test_images(unzip_path)
       end
     end
-
-    def test_single(unzip_path)
-      expect(Dir.clean_entries(File.join(unzip_path, "single"))).to eql %w[single_image.png]
-    end
-
-    def test_tree(unzip_path)
-      expect(Dir.clean_entries(File.join(unzip_path, "tree"))).to eql %w[branch root_image.png]
-      expect(Dir.clean_entries(File.join(unzip_path, "tree", "branch"))).to eql %w[branch_image1.png branch_image2.png]
-    end
-  end
-
-  def generate_tree
-    instance.generate("spec/fixtures/tree")
   end
 end

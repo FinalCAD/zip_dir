@@ -37,9 +37,8 @@ describe ZipDir::Zip do
       subject
       unzip_path = ZipDir::Unzipper.new(instance.file.path).unzip_path
 
-      expect(Dir.clean_entries(unzip_path)).to eql %w[single_image.png]
-      file_path = File.join(unzip_path, "single_image.png")
-      expect(File.read(file_path)).to eql File.read(File.join(source_path, "single_image.png"))
+      expect(clean_glob(unzip_path)).to eql ["/single_image.png"]
+      test_images(unzip_path)
     end
   end
 end
