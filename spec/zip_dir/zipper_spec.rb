@@ -85,13 +85,17 @@ describe ZipDir::Zipper do
   describe "#generate" do
     subject { instance.generate(tree_dir) }
 
-    it "zips the folders" do
-      subject
+    def unzip_and_test_images(glob_result)
       unzip_path = ZipDir::Unzipper.new(instance.file.path).unzip_path
 
-      expect(clean_glob(unzip_path)).to match_array ["/tree", "/tree/branch", "/tree/branch/branch_image1.png",
-                                                     "/tree/branch/branch_image2.png", "/tree/root_image.png"]
+      expect(clean_glob(unzip_path)).to match_array glob_result
       test_images(unzip_path)
+    end
+
+    it "zips the folder" do
+      subject
+      unzip_and_test_images ["/tree", "/tree/branch", "/tree/branch/branch_image1.png",
+                             "/tree/branch/branch_image2.png", "/tree/root_image.png"]
     end
 
     context "with two folders" do
@@ -105,11 +109,37 @@ describe ZipDir::Zipper do
 
       it "zips the folders" do
         subject
-        unzip_path = ZipDir::Unzipper.new(instance.file.path).unzip_path
-        expect(clean_glob(unzip_path)).to match_array ["/single", "/single/single_image.png", "/tree", "/tree/branch",
-                                                       "/tree/branch/branch_image1.png", "/tree/branch/branch_image2.png",
-                                                       "/tree/root_image.png"]
-        test_images(unzip_path)
+        unzip_and_test_images ["/single", "/single/single_image.png", "/tree", "/tree/branch",
+                               "/tree/branch/branch_image1.png", "/tree/branch/branch_image2.png",
+                               "/tree/root_image.png"]
+      end
+
+
+      context "with :root_directory option" do
+        subject do
+          instance.generate do |instance|
+            ["single", "tree"].each do |folder|
+              instance.add_path "spec/fixtures/#{folder}", root_directory: true
+            end
+          end
+        end
+
+        it "zips the folders in the folder" do
+          subject
+          unzip_and_test_images ["/single_image.png", "/branch",
+                                 "/branch/branch_image1.png", "/branch/branch_image2.png",
+                                 "/root_image.png"]
+        end
+      end
+    end
+
+    context "with :root_directory option" do
+      subject { instance.generate(tree_dir, root_directory: true) }
+
+      it " zips the folders in the folder" do
+        subject
+        unzip_and_test_images ["/branch", "/branch/branch_image1.png",
+                               "/branch/branch_image2.png", "/root_image.png"]
       end
     end
   end

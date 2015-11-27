@@ -30,10 +30,17 @@ zip_file = zipper.generate(__some_path_to_directory__)
 zip_file # => #<Tempfile:/var/folders/6c/s4snqy051jqdpbjw7f7tsn940000gn/T/zipper-20151127-19694-1baaqoi.zip>
 zip_file == zipper.file # => true
 
-# alternative generate calls below
+# to zip multiple directories
 zip_file = zipper.generate do |z|
   z.add_path __some_path_to_directory__
   z.add_path __another_path_to_directory__ # does a shell "cp -r" operation
+end
+
+# to zip __just the paths inside the directory___
+zip_file = zipper.generate(__some_path_to_directory__, root_directory: true)
+
+zip_file = zipper.generate do |z|
+  z.add_path __some_path_to_directory__, root_directory: true
 end
 
 #
