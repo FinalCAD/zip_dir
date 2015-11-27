@@ -20,7 +20,7 @@ module ZipDir
     end
 
     def unzip
-      Zip::File.open(zip_path) do |zip_file|
+      ::Zip::File.open(zip_path) do |zip_file|
         zip_file.each do |entry|
           file_path = "#{@unzip_path}/#{entry.name}"
           entry.extract(file_path) unless File.exists?(file_path)
