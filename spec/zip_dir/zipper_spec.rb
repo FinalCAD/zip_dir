@@ -4,6 +4,26 @@ describe ZipDir::Zipper do
   let(:instance) { described_class.new }
   let(:tree_dir) { "spec/fixtures/tree" }
 
+  context "given a file name" do
+    let(:instance) { described_class.new('zippy') }
+
+    before { instance.generate(tree_dir) }
+
+    it "generated file contains name" do
+      expect(File.basename(instance.file.path)).to match /\Azippy.+\.zip\z/
+    end
+
+    context "that ends with .zip" do
+      let(:instance) { described_class.new('zippy.zip') }
+
+
+      it "generated file contains name, but removes .zip suffix" do
+        expect(File.basename(instance.file.path)).to_not match /\Azippy\.zip.+\.zip\z/
+        expect(File.basename(instance.file.path)).to match /\Azippy.+\.zip\z/
+      end
+    end
+  end
+
   describe "#generated?" do
     subject { instance.generated? }
 
