@@ -25,7 +25,8 @@ module ZipDir
     protected
     def zip_path(zip_io, relative_path="")
       entries = Dir.entries(relative_path.empty? ? source_path : File.join(source_path, relative_path))
-      entries.shift(2)
+      entries.delete(".")
+      entries.delete("..")
       entries.each do |entry|
         relative_entry_path = relative_path.empty? ? entry : File.join(relative_path, entry)
         source_entry_path = File.join(source_path, relative_entry_path)

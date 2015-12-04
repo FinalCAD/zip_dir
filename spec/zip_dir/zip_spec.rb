@@ -40,5 +40,12 @@ describe ZipDir::Zip do
       expect(clean_glob(unzip_path)).to eql ["/single_image.png"]
       test_images(unzip_path)
     end
+
+    context "entries returns a weird result" do
+      it "works" do
+        expect(Dir).to receive(:entries).with("spec/fixtures/single").and_return(%w[single_image.png . ..]).once
+        subject
+      end
+    end
   end
 end
