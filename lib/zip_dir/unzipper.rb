@@ -24,9 +24,7 @@ module ZipDir
         zip_file.each do |entry|
           file_path = "#{@unzip_path}/#{entry.name}"
 
-          # Fixes:
-          # Errno::ENOENT:
-          # No such file or directory @ rb_sysopen - /var/folders/6c/s4snqy051jqdpbjw7f7tsn940000gn/T/d20160209-56123-1o14n5n/Niveaux/Fondations.png
+          # Fixes: spec/fixtures/encoded_differently.zip (in a test)
           dir_path = File.dirname(file_path).to_s
           FileUtils.mkdir_p dir_path unless File.exists?(dir_path)
 
