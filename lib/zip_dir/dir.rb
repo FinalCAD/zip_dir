@@ -12,7 +12,7 @@ module ZipDir
       @copy_path = ::Dir.mktmpdir
       proxy = Proxy.new(copy_path)
       if source_path
-        raise "Should not give block and source_path" if block_given?
+        raise "Should not give block and source_path: #{source_path}" if block_given?
         proxy.add_path source_path, options
       else
         yield proxy
@@ -40,15 +40,15 @@ module ZipDir
         if File.directory?(source_path)
           add_directory source_path, options
         elsif File.file?(source_path)
-          add_file source_path, options
+          add_simple_path source_path, options
         else
-          raise "Attempting to add non-existent path."
+          raise "Attempting to add non-existent path: #{source_path}"
         end
       end
       alias_method :<<, :add_path
 
       protected
-      def add_directory(source_path, options)
+      def add_directory(source_path, options={})
         glob = nil
 
         if options[:glob]
@@ -60,13 +60,13 @@ module ZipDir
           glob = "#{source_path}/*"
         end
 
-        return FileUtils.cp_r source_path, @copy_path unless glob
+        return add_simple_path source_path, options unless glob
 
         glob += ".{#{Array[options[:extension]].join(",")}}" if options[:extension]
-        ::Dir.glob(glob).each { |path| add_path(path) }
+        ::Dir.glob(glob).each { |path| add_simple_path(path) }
       end
 
-      def add_file(source_path, options)
+      def add_simple_path(source_path, options={})
         copy_path_parts = [@copy_path]
 
         if options[:rename]

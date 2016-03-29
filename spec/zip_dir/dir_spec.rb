@@ -57,6 +57,17 @@ describe ZipDir::Dir do
                                  "/tree/branch/branch_image2.png", "/tree/root_image.png"]
     end
 
+    context "with :rename option" do
+      let(:new_name) { "some_new_name" }
+      let(:options) { { rename: new_name } }
+
+      it "copies the directory and renames it" do
+        subject
+        test_filenames_and_images [nil, "branch", "branch/branch_image1.png", "branch/branch_image2.png", "root_image.png"]
+                                    .map {|result| ["/#{new_name}", result].compact.join("/") }
+      end
+    end
+
     context "with :root_directory option" do
       let(:options) { { root_directory: true } }
 
