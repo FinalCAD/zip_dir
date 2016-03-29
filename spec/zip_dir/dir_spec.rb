@@ -107,6 +107,16 @@ describe ZipDir::Dir do
       end
     end
 
+    context "with :glob option" do
+      let(:glob) { "fake glob" }
+      let(:options) { { glob: glob } }
+
+      it "uses the glob given" do
+        expect(::Dir).to receive(:glob).with(glob).and_return []
+        subject
+      end
+    end
+
     context "with a file" do
       let(:path) { "spec/fixtures/single/single_image.png" }
 
