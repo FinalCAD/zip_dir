@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe ZipDir::Dir do
   let(:instance) { described_class.new }
-  let(:tree_dir) { "spec/fixtures/tree" }
+  let(:path) { "spec/fixtures/tree" }
 
   describe "#generated?" do
     subject { instance.generated? }
@@ -12,7 +12,7 @@ describe ZipDir::Dir do
     end
 
     context "after generating" do
-      before { instance.generate(tree_dir) }
+      before { instance.generate(path) }
 
       it "should be true" do
         expect(subject).to eql true
@@ -28,7 +28,7 @@ describe ZipDir::Dir do
     end
 
     context "after generating" do
-      before { instance.generate(tree_dir) }
+      before { instance.generate(path) }
 
       it "cleans up copy path" do
         expect(instance.copy_path).to_not eql nil
@@ -44,7 +44,7 @@ describe ZipDir::Dir do
 
   describe "#generate" do
     let(:options) { {} }
-    subject { instance.generate(tree_dir, options) }
+    subject { instance.generate(path, options) }
 
     def test_filenames_and_images(glob_result)
       expect(clean_glob(instance.copy_path)).to match_array glob_result
@@ -64,6 +64,25 @@ describe ZipDir::Dir do
         subject
         test_filenames_and_images ["/branch", "/branch/branch_image1.png",
                                    "/branch/branch_image2.png", "/root_image.png"]
+      end
+    end
+
+    context "with a file" do
+      let(:path) { "spec/fixtures/single/single_image.png" }
+
+      it "copies the file in the folder" do
+        subject
+        test_filenames_and_images ["/single_image.png"]
+      end
+
+      context ":rename option" do
+        let(:new_name) { "some_new_name.png" }
+        let(:options) { { rename: new_name } }
+
+        it "copies the file and renames it" do
+          subject
+          test_filenames_and_images ["/#{new_name}"]
+        end
       end
     end
 

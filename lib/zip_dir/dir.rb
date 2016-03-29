@@ -6,14 +6,14 @@ module ZipDir
       !!@generated
     end
 
-    def generate(source_path=nil, root_directory: false)
+    def generate(source_path=nil, options={})
       cleanup if generated?
 
       @copy_path = ::Dir.mktmpdir
       proxy = Proxy.new(copy_path)
       if source_path
         raise "should not give block and source_path" if block_given?
-        proxy.add_path source_path, root_directory: root_directory
+        proxy.add_path source_path, options
       else
         yield proxy
       end
@@ -34,9 +34,19 @@ module ZipDir
         @copy_path = copy_path
       end
 
-      def add_path(source_path, root_directory: false)
-        return ::Dir.glob("#{source_path}/*").each { |path| add_path(path) } if File.directory?(source_path) && root_directory
-        FileUtils.cp_r source_path, [@copy_path].join("/")
+      def add_path(source_path, options={})
+        options = options.inject({}){|hash,(k,v)| hash[k.to_sym] = v; hash}
+        return ::Dir.glob("#{source_path}/*").each { |path| add_path(path) } if File.directory?(source_path) && options[:root_directory]
+
+        copy_path_parts = [@copy_path]
+
+        if File.file?(source_path) && options[:rename]
+          rename = options[:rename]
+          rename += File.extname(source_path) if File.extname(rename).empty?
+          copy_path_parts << rename
+        end
+
+        FileUtils.cp_r source_path, copy_path_parts.join("/")
       end
       alias_method :<<, :add_path
     end
