@@ -67,6 +67,15 @@ describe ZipDir::Dir do
       end
     end
 
+    context "with :flatten_directories option" do
+      let(:options) { { flatten_directories: true } }
+
+      it "copies the files without any directories" do
+        subject
+        test_filenames_and_images ["/branch_image1.png", "/branch_image2.png", "/root_image.png"]
+      end
+    end
+
     context "with a file" do
       let(:path) { "spec/fixtures/single/single_image.png" }
 

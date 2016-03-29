@@ -12,7 +12,7 @@ module ZipDir
       @copy_path = ::Dir.mktmpdir
       proxy = Proxy.new(copy_path)
       if source_path
-        raise "should not give block and source_path" if block_given?
+        raise "Should not give block and source_path" if block_given?
         proxy.add_path source_path, options
       else
         yield proxy
@@ -36,11 +36,34 @@ module ZipDir
 
       def add_path(source_path, options={})
         options = options.inject({}){|hash,(k,v)| hash[k.to_sym] = v; hash}
-        return ::Dir.glob("#{source_path}/*").each { |path| add_path(path) } if File.directory?(source_path) && options[:root_directory]
 
+        if File.directory?(source_path)
+          add_directory source_path, options
+        elsif File.file?(source_path)
+          add_file source_path, options
+        else
+          raise "Attempting to add non-existent path."
+        end
+      end
+      alias_method :<<, :add_path
+
+      protected
+      def add_directory(source_path, options)
+        if options[:flatten_directories]
+          glob = "#{source_path}/**/*.*"
+        elsif options[:root_directory]
+          glob = "#{source_path}/*"
+        end
+
+        return ::Dir.glob(glob).each { |path| add_path(path) } if glob
+
+        FileUtils.cp_r source_path, @copy_path
+      end
+
+      def add_file(source_path, options)
         copy_path_parts = [@copy_path]
 
-        if File.file?(source_path) && options[:rename]
+        if options[:rename]
           rename = options[:rename]
           rename += File.extname(source_path) if File.extname(rename).empty?
           copy_path_parts << rename
@@ -48,7 +71,6 @@ module ZipDir
 
         FileUtils.cp_r source_path, copy_path_parts.join("/")
       end
-      alias_method :<<, :add_path
     end
   end
 end
