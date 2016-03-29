@@ -50,12 +50,16 @@ module ZipDir
       protected
       def add_directory(source_path, options)
         if options[:flatten_directories]
-          glob = "#{source_path}/**/*.*"
+          glob = "#{source_path}/**/*"
+          options[:extension] = '*' unless options[:extension]
         elsif options[:root_directory]
           glob = "#{source_path}/*"
         end
 
-        return ::Dir.glob(glob).each { |path| add_path(path) } if glob
+        if glob
+          glob += ".{#{Array[options[:extension]].join(",")}}" if options[:extension]
+          return ::Dir.glob(glob).each { |path| add_path(path) }
+        end
 
         FileUtils.cp_r source_path, @copy_path
       end

@@ -76,6 +76,37 @@ describe ZipDir::Dir do
       end
     end
 
+    context "with :extension option" do
+      let(:path) { "spec/fixtures/mixed" }
+
+      context "* extension and :root_directory option" do
+        let(:options) { { extension: '*', root_directory: true } }
+
+        it "skips folders" do
+          subject
+          test_filenames_and_images  ["/root_image.png", "/root.md"]
+        end
+      end
+
+      context ".png extension and :flatten_directories option" do
+        let(:options) { { extension: :png, flatten_directories: true } }
+
+        it "copies all images only" do
+          subject
+          test_filenames_and_images ["/root_image.png", "/branch_image.png"]
+        end
+      end
+
+      context ".md and .txt extension and :flatten_directories option" do
+        let(:options) { { extension: %i[md txt], flatten_directories: true } }
+
+        it "copies all text files only" do
+          subject
+          test_filenames_and_images ["/root.md", "/branch.txt"]
+        end
+      end
+    end
+
     context "with a file" do
       let(:path) { "spec/fixtures/single/single_image.png" }
 
