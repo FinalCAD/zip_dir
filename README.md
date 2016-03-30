@@ -58,13 +58,14 @@ ZipDir::Unzipper.new(zip_file.path).unzip_path # => "/var/folders/6c/s4snqy051jq
 ```ruby
 ZipDir::Zipper.superclass # => ZipDir::Dir
 
-dir = ZipDir::Dir.new
-dir.generate("some/path" options_described_below)
-dir.generate do |d|
+zip_dir = ZipDir::Dir.new
+dir = zip_dir.generate("some/path" options_described_below)
+dir = zip_dir.generate do |d|
   d.add_path "some/path", options_described_below
 end
+dir # => #<Dir:/var/folders/6c/s4snqy051jqdpbjw7f7tsn940000gn/T/d20160330-35335-esnuha>
 
-dir.cleanup
+zip_dir.cleanup
 ```
 
 ```ruby
