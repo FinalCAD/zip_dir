@@ -2,7 +2,7 @@ module ZipDir
   class Unzipper
     attr_reader :zip_path
     def initialize(zip_path)
-      @zip_path, @unzip_path = zip_path, Dir.mktmpdir
+      @zip_path, @unzip_path = zip_path, ::Dir.mktmpdir
     end
 
     def cleanup
