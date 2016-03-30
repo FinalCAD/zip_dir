@@ -144,6 +144,24 @@ describe ZipDir::Dir do
           subject
           test_filenames_and_images ["/#{new_name}"]
         end
+
+        context "with no extension" do
+          let(:new_name) { "some_new_name" }
+
+          it "copies the file and renames it" do
+            subject
+            test_filenames_and_images ["/#{new_name}.png"]
+          end
+        end
+
+        context "with custom extension" do
+          let(:new_name) { "some_new_name.gif" }
+
+          it "copies the file and renames it" do
+            subject
+            test_filenames_and_images ["/#{new_name}"]
+          end
+        end
       end
     end
 
