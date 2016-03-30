@@ -71,7 +71,7 @@ dir.cleanup
 # Directories
 { root_directory: true } # copies each file and directory path within the given directory path
 { flatten_directories: true } # copies all file paths with no directory structure copied (may override files)
-{ extension: :gif || ["gif", "txt"] || "*" } # filters file extensions of paths, used with options listed above
+{ extension: :gif || ["gif", "txt"] || "*" } # filters file extensions of paths, used with options listed above (:extensions is an alias)
 { glob: "custom_glob" } # copies the paths resulting from the custom glob
 
 # Files and Directories

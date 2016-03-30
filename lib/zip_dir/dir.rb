@@ -49,6 +49,7 @@ module ZipDir
 
       protected
       def add_directory(source_path, options={})
+        options[:extension] = options[:extensions] unless options[:extension]
         glob = nil
 
         if options[:glob]
